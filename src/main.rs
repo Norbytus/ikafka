@@ -34,5 +34,6 @@ fn print_matched_text(regex: &Regex, m: &mut String) {
         m.replace_range(mat.start()..mat.end(), word.red().to_string().as_str());
     }
 
-    println!("{}", m);
+    let date = Local::now().format("%Y-%m-%d %H:%M:%S").to_string();
+    println!("[{}] - {}", date, m);
 }
