@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-kafka = "0.8"
+kafka = "0.9"
 regex = "1.6.0"
 chrono = "0.4.19"
-clap = { version = "3.2.12", features = ["derive"] }
+clap = { version = "3.2.22", features = ["derive"] }
 colored = "2.0.0"

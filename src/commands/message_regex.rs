@@ -1,14 +1,12 @@
-use clap::Parser;
+use super::*;
 use kafka::consumer::Consumer;
-use regex::Regex;
 
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-pub struct Args {
+#[derive(Args, Debug)]
+pub struct ReadMessages {
     ///List of kafka hosts
     #[clap(
-        short = 'h',
-        long = "host",
+        short = 'a',
+        long = "a",
         value_parser,
         required = true,
         multiple_values = true,
@@ -38,7 +36,7 @@ pub struct Args {
     regex: Option<String>,
 }
 
-impl Args {
+impl ReadMessages {
     pub fn consumer(&self) -> Result<Consumer, kafka::Error> {
         let mut builder = Consumer::from_hosts(self.host.clone());
 
@@ -57,3 +55,26 @@ impl Args {
         }
     }
 }
+
+impl CommandExecute for ReadMessages {
+    fn run(self) -> Result<(), Box<dyn std::error::Error>> {
+        let mut consumer = self.consumer()?;
+
+        let regex = self.regex();
+
+        loop {
+            for ms in consumer.poll().unwrap().iter() {
+                for m in ms.messages() {
+                    let mut m = String::from_utf8(m.value.to_vec()).expect("Wrong value message");
+                    if regex.is_some() {
+                        print_matched_text(regex.as_ref().unwrap(), &mut m);
+                    } else {
+                        print_message(&m);
+                    }
+                }
+            }
+        }
+    }
+}
+
+
