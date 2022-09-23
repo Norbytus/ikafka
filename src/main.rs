@@ -1,3 +1,5 @@
+use std::ops::{RangeBounds, Range};
+
 use chrono::Local;
 use clap::Parser;
 use colored::Colorize;
@@ -8,7 +10,7 @@ mod args;
 const DATE_FORMAT: &'static str = "%Y-%m-%d %H:%M:%S";
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("{} {} {}", "Stand".blue(), "with".yellow(), "Satan".red());
+    print_hello_message();
 
     let args = args::Args::parse();
 
@@ -31,10 +33,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn print_matched_text(regex: &Regex, m: &mut String) {
-    for mat in regex.find_iter(m.clone().as_str()).into_iter() {
-        let word = &m[mat.start()..mat.end()];
+    let matches: Vec<Range<usize>> = regex.find_iter(m.as_str())
+        .into_iter()
+        .map(|mat| mat.start()..mat.end())
+        .collect();
 
-        m.replace_range(mat.start()..mat.end(), word.red().to_string().as_str());
+    for mat in matches {
+        let  word = &m[mat.clone()];
+
+        m.replace_range(mat, word.red().to_string().as_str());
     }
 
     print_message(m);
@@ -43,4 +50,8 @@ fn print_matched_text(regex: &Regex, m: &mut String) {
 fn print_message(m: &str) {
     let date = Local::now().format(DATE_FORMAT).to_string();
     println!("[{}] - {}", date, m);
+}
+
+fn print_hello_message() {
+    println!("{} {} {}", "Stand".blue(), "with".yellow(), "Satan".red());
 }
