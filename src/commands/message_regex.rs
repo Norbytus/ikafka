@@ -9,7 +9,7 @@ pub struct ReadMessages {
         long = "a",
         value_parser,
         required = true,
-        multiple_values = true,
+        num_args = 0..,
         help = "List of kafka hosts"
     )]
     host: Vec<String>,
@@ -20,7 +20,7 @@ pub struct ReadMessages {
         long = "topic",
         value_parser,
         required = true,
-        multiple_values = true,
+        num_args = 0..,
         help = "List of kafka topics"
     )]
     topic: Vec<String>,
