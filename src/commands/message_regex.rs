@@ -1,3 +1,5 @@
+use crate::print_formated_message;
+
 use super::*;
 use kafka::consumer::Consumer;
 
@@ -34,6 +36,16 @@ pub struct ReadMessages {
         help = "Regular expression for message match"
     )]
     regex: Option<String>,
+
+    ///Skip not suitable messages, true by default
+    #[clap(
+        short = 's',
+        long = "skip",
+        required = false,
+        requires = "regex",
+        help = "Skip not suitable messages, true by default"
+    )]
+    skip: bool
 }
 
 impl ReadMessages {
@@ -65,11 +77,21 @@ impl CommandExecute for ReadMessages {
         loop {
             for ms in consumer.poll().unwrap().iter() {
                 for m in ms.messages() {
-                    let mut m = String::from_utf8(m.value.to_vec()).expect("Wrong value message");
+                    let m = String::from_utf8(m.value.to_vec()).expect("Wrong value message");
                     if regex.is_some() {
-                        print_matched_text(regex.as_ref().unwrap(), &mut m);
+                        print_formated_message!(
+                            m,
+                            regex.as_ref().unwrap(),
+                            self.skip,
+                            None,
+                            Some("%Y-%m-%d %H:%M:%S".to_string())
+                        );
                     } else {
-                        print_message(&m);
+                        print_formated_message!(
+                            m,
+                            None,
+                            Some("%Y-%m-%d %H:%M:%S".to_string())
+                        );
                     }
                 }
             }

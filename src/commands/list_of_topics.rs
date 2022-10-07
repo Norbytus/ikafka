@@ -1,5 +1,7 @@
 use kafka::client::KafkaClient;
 
+use crate::print_formated_message;
+
 use super::*;
 
 #[derive(Debug, Args)]
@@ -24,6 +26,16 @@ pub struct ListOfTopics {
         help = "Regular expression for message match"
     )]
     regex: Option<String>,
+
+    ///Skip not suitable messages, true by default
+    #[clap(
+        short = 's',
+        long = "skip",
+        required = false,
+        requires = "regex",
+        help = "Skip not suitable messages, true by default"
+    )]
+    skip: bool
 }
 
 impl ListOfTopics {
@@ -44,14 +56,22 @@ impl CommandExecute for ListOfTopics {
 
         let topics = client.topics();
 
+        let regex = self.regex();
         for topic in topics {
             if self.regex().is_some() {
-                print_matched_text_witout_date(
-                    self.regex().as_ref().unwrap(),
-                    &mut topic.name().to_string()
+                print_formated_message!(
+                    topic.name().to_string(),
+                    regex.as_ref().unwrap(),
+                    self.skip,
+                    None,
+                    Some("%Y-%m-%d %H:%M:%S".to_string())
                 );
             } else {
-                print_message_withot_date(topic.name());
+                print_formated_message!(
+                    topic.name().to_string(),
+                    None,
+                    None
+                );
             }
         }
 
