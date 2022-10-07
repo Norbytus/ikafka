@@ -64,7 +64,7 @@ impl CommandExecute for ListOfTopics {
                     regex.as_ref().unwrap(),
                     self.skip,
                     None,
-                    Some("%Y-%m-%d %H:%M:%S".to_string())
+                    Some(DATE_FORMAT)
                 );
             } else {
                 print_formated_message!(

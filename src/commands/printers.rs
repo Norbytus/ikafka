@@ -1,25 +1,23 @@
-#[macro_use]
 use colored::Color;
-use regex::Replacer;
 use super::*;
 
 pub trait Formatter {
     fn formate(&mut self) -> Option<&str>;
 }
 
-pub struct DefaultFormatter {
+pub struct DefaultFormatter<'a> {
     text: String,
     color: Option<Color>,
-    date: Option<String>
+    date: Option<&'a str>
 }
 
-impl DefaultFormatter {
-    pub fn new(text: String, color: Option<Color>, date: Option<String>) -> Self {
+impl<'a> DefaultFormatter<'a> {
+    pub fn new(text: String, color: Option<Color>, date: Option<&'a str>) -> Self {
         Self { text, color, date }
     }
 }
 
-impl Formatter for DefaultFormatter {
+impl<'a> Formatter for DefaultFormatter<'a> {
     fn formate(&mut self) -> Option<&str> {
         if let Some(date) = self.date.as_ref() {
             let data = format!("[{}] ", Local::now().format(date).to_string().as_str());
@@ -39,7 +37,7 @@ pub struct RegexFormatter<'a> {
     skip: bool,
     text: String,
     color: Option<Color>,
-    date: Option<String>
+    date: Option<&'a str>
 }
 
 impl<'a> RegexFormatter<'a> {
@@ -48,7 +46,7 @@ impl<'a> RegexFormatter<'a> {
         regex: &'a Regex,
         skip: bool,
         color: Option<Color>,
-        date: Option<String>
+        date: Option<&'a str>
     ) -> Self {
         Self {
             regex,
