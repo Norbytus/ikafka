@@ -74,8 +74,13 @@ impl<'a> Formatter for RegexFormatter<'a> {
         for mat in matches {
             let word = &self.text[mat.clone()];
 
-            self.text
-                .replace_range(mat, word.red().to_string().as_str());
+            if let Some(color) = self.color {
+                self.text
+                    .replace_range(mat, word.on_color(color).to_string().as_str());
+            } else {
+                self.text
+                    .replace_range(mat, word.red().to_string().as_str());
+            }
         }
 
         if let Some(date) = self.date.as_ref() {

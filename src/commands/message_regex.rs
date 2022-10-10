@@ -1,6 +1,7 @@
 use crate::print_formated_message;
 
 use super::*;
+use colored::Color;
 use kafka::consumer::Consumer;
 
 #[derive(Args, Debug)]
@@ -45,7 +46,19 @@ pub struct ReadMessages {
         requires = "regex",
         help = "Skip not suitable messages, true by default"
     )]
-    skip: bool
+    skip: bool,
+
+    ///Highlight matched text format 0-255 0-255 0-255
+    #[clap(
+        short = 'c',
+        long = "color",
+        required = false,
+        requires = "regex",
+        num_args = 3,
+        value_parser,
+        help = "Highlight matched text"
+    )]
+    color: Option<Vec<u8>>
 }
 
 impl ReadMessages {
@@ -62,6 +75,18 @@ impl ReadMessages {
     pub fn regex(&self) -> Option<Regex> {
         if let Some(regex) = &self.regex {
             Some(Regex::new(&regex).expect("Wrong regular expression"))
+        } else {
+            None
+        }
+    }
+
+    pub fn color(&self) -> Option<Color> {
+        if let Some(color) = &self.color {
+            Some(Color::TrueColor {
+                r: color.get(0).unwrap_or(&0).clone(),
+                g: color.get(1).unwrap_or(&0).clone(),
+                b: color.get(3).unwrap_or(&0).clone()
+            })
         } else {
             None
         }
@@ -83,7 +108,7 @@ impl CommandExecute for ReadMessages {
                             m,
                             regex.as_ref().unwrap(),
                             self.skip,
-                            None,
+                            self.color(),
                             Some(DATE_FORMAT)
                         );
                     } else {
