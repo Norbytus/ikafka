@@ -32,7 +32,7 @@ pub struct ListOfTopics {
     #[clap(
         short = 's',
         long = "skip",
-        required = false,
+        required = true,
         requires = "regex",
         help = "Skip not suitable messages, true by default"
     )]
