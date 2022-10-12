@@ -12,7 +12,7 @@ pub struct ReadMessages {
         long = "a",
         value_parser,
         required = true,
-        num_args = 0..,
+        num_args = 1..,
         help = "List of kafka hosts"
     )]
     host: Vec<String>,
